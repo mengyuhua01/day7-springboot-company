@@ -2,6 +2,7 @@ package org.example.springdemo;
 
 
 
+import org.example.springdemo.dao.entity.Employee;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,15 +45,15 @@ class SpringDemoApplicationTests {
     void should_return_employee_when_get_given_a_valid_id() throws Exception{
         String requestBody = """
                   {
-                       "name": "Tom",
+                       "name": "Sara",
                        "age": 20,
                        "salary": 5000.0,
-                       "gender": "male"
+                       "gender": "female"
                    }
                 """;
         mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(2));
 
 
         mockMvc.perform(get("/employees/{id}",1).contentType(MediaType.APPLICATION_JSON))
@@ -62,6 +63,19 @@ class SpringDemoApplicationTests {
                 .andExpect(jsonPath("$.age").value(20))
                 .andExpect(jsonPath("$.salary").value(5000.0))
                 .andExpect(jsonPath("$.gender").value("male"));
+    }
+
+    @Test
+    void should_get_employees_when_get_given_valid_gender() throws Exception{
+        Employee expect = new Employee(1, "male", 20, "Tom", 5000.0);
+        mockMvc.perform(get("/employees?gender=male").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(expect.getId()))
+                .andExpect(jsonPath("$[0].name").value(expect.getName()))
+                .andExpect(jsonPath("$[0].age").value(expect.getAge()))
+                .andExpect(jsonPath("$[0].salary").value(expect.getSalary()))
+                .andExpect(jsonPath("$[0].gender").value(expect.getGender()));
+
     }
 
 }
