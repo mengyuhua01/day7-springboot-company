@@ -104,5 +104,26 @@ public class CompanyTests {
         mockMvc.perform(get("/companies/{id}", 4).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    @Order(6)
+    void should_return_paginated_companies_when_get_given_valid_page_and_size() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            String requestBody = String.format("""
+              {
+                   "name": "Company%d"
+               }
+            """, i);
+            mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").value(i+3));
+        }
+
+        mockMvc.perform(get("/companies/page?page=2&size=5").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].name").value("Company3"))
+                .andExpect(jsonPath("$[1].name").value("Company4"))
+                .andExpect(jsonPath("$[2].name").value("Company5"));
+    }
 
 }

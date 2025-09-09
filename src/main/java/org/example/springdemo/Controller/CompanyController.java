@@ -1,7 +1,7 @@
 package org.example.springdemo.Controller;
 
 import org.example.springdemo.dao.entity.Company;
-import org.example.springdemo.dao.entity.Employee;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,5 +49,17 @@ public class CompanyController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+    @GetMapping("/companies/page")
+    public ResponseEntity<List<Company>> getCompaniesByPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, companies.size());
+        if (fromIndex >= companies.size()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<Company> paginatedCompanies = companies.subList(fromIndex, toIndex);
+        return ResponseEntity.ok(paginatedCompanies);
     }
 }
