@@ -26,5 +26,20 @@ public class CompanyController {
         }
         return ResponseEntity.ok(company);
     }
-
+    @GetMapping("/companies")
+    public List<Company> getCompanies() {
+        return companies;
+    }
+    @PutMapping("/companies/{id}")
+    public ResponseEntity<Company> updateCompany(@PathVariable long id, @RequestBody Company updatedCompany) {
+        Company company = companies.stream()
+                .filter(c -> c.getId() == id)
+                .findFirst()
+                .orElse(null);
+        if (company == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+         company.setName(updatedCompany.getName());
+         return ResponseEntity.ok(company);
+    }
 }

@@ -57,5 +57,34 @@ public class CompanyTests {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Java"));
     }
+    @Test
+    @Order(3)
+    void should_return_all_companies_when_get_given_no_parameters() throws Exception {
+        mockMvc.perform(get("/companies").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+    @Test
+    @Order(4)
+    void should_update_company_when_put_given_valid_id_and_body() throws Exception {
+        String createRequestBody = """
+                  {
+                       "name": "OOP"
+                   }
+                """;
+        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3));
+
+        String updateRequestBody = """
+                  {
+                       "name": "OOCL"
+                   }
+                """;
+        mockMvc.perform(put("/companies/{id}", 3).contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.name").value("OOCL"));
+    }
 
 }
