@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -92,5 +94,36 @@ class SpringDemoApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
+
+    @Test
+    @Order(5)
+    void should_update_employee_when_put_given_valid_id_and_body() throws Exception {
+        String createRequestBody = """
+              {
+                   "name": "Alice",
+                   "age": 25,
+                   "salary": 7000.0,
+                   "gender": "female"
+               }
+            """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3));
+
+        String updateRequestBody = """
+              {
+                   "age": 30,
+                   "salary": 8000.0
+               }
+            """;
+        mockMvc.perform(put("/employees/{id}", 3).contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.name").value("Alice"))
+                .andExpect(jsonPath("$.age").value(30))
+                .andExpect(jsonPath("$.salary").value(8000.0))
+                .andExpect(jsonPath("$.gender").value("female"));
+    }
+
 
 }

@@ -22,9 +22,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/{id}")
-    public Employee getEmployee(@PathVariable long id){
-        return employees.stream().filter(employee -> employee.getId() == id).findFirst().get();
+    public ResponseEntity<Employee> getEmployee(@PathVariable long id){
+        Employee employee = employees.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
+        if (employee == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(employee);
     }
+
 
     @GetMapping("/employees/gender")
     public List<Employee> queryEmployeeByGender(@RequestParam String gender){
@@ -34,4 +39,18 @@ public class EmployeeController {
     public List<Employee> getEmployeeList() {
         return employees;
     }
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee updatedEmployee) {
+        Employee employee = employees.stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+        if (employee == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        employee.setAge(updatedEmployee.getAge());
+        employee.setSalary(updatedEmployee.getSalary());
+        return ResponseEntity.ok(employee);
+    }
+
 }
