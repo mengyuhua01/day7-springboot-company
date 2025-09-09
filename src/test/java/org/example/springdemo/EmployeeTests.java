@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class SpringDemoApplicationTests {
+class EmployeeTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -124,6 +124,33 @@ class SpringDemoApplicationTests {
                 .andExpect(jsonPath("$.salary").value(8000.0))
                 .andExpect(jsonPath("$.gender").value("female"));
     }
+
+    @Test
+    @Order(6)
+    void should_delete_employee_when_delete_given_valid_id() throws Exception {
+        String createRequestBody = """
+          {
+               "name": "Bob",
+               "age": 28,
+               "salary": 6000.0,
+               "gender": "male"
+           }
+        """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(4));
+
+        mockMvc.perform(delete("/employees/{id}", 4).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/employees/{id}", 4).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+
+
 
 
 }

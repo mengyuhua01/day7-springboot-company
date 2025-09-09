@@ -52,5 +52,16 @@ public class EmployeeController {
         employee.setSalary(updatedEmployee.getSalary());
         return ResponseEntity.ok(employee);
     }
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable long id) {
+        boolean removed = employees.removeIf(employee -> employee.getId() == id);
+        if (!removed) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
+
 
 }
