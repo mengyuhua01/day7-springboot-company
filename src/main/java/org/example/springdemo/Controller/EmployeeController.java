@@ -26,8 +26,12 @@ public class EmployeeController {
         return employees.stream().filter(employee -> employee.getId() == id).findFirst().get();
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/employees/gender")
     public List<Employee> queryEmployeeByGender(@RequestParam String gender){
         return employees.stream().filter(employee -> employee.getGender().equals(gender)).collect(Collectors.toList());
+    }
+    @GetMapping("/employees")
+    public List<Employee> getEmployeeList() {
+        return employees;
     }
 }
