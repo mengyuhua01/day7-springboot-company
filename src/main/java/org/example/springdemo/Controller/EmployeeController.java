@@ -60,8 +60,16 @@ public class EmployeeController {
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-
-
-
+    @GetMapping("/employees/page")
+    public ResponseEntity<List<Employee>> getEmployeesByPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, employees.size());
+        if (fromIndex >= employees.size()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<Employee> paginatedEmployees = employees.subList(fromIndex, toIndex);
+        return ResponseEntity.ok(paginatedEmployees);
+    }
 }

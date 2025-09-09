@@ -147,7 +147,31 @@ class EmployeeTests {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @Order(7)
+    void should_return_paginated_employees_when_get_given_valid_page_and_size() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            String requestBody = String.format("""
+              {
+                   "name": "Employee%d",
+                   "age": %d,
+                   "salary": %d,
+                   "gender": "male"
+               }
+            """, i, 20 + i, 5000 + i * 100);
+            mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").value(i+3));
+        }
 
+        // 测试分页查询
+        mockMvc.perform(get("/employees/page?page=2&size=5").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].name").value("Employee3"))
+                .andExpect(jsonPath("$[1].name").value("Employee4"))
+                .andExpect(jsonPath("$[2].name").value("Employee5"));
+    }
 
 
 
