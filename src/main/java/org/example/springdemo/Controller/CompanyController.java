@@ -42,4 +42,12 @@ public class CompanyController {
          company.setName(updatedCompany.getName());
          return ResponseEntity.ok(company);
     }
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable long id) {
+        boolean removed = companies.removeIf(company -> company.getId() == id);
+        if (!removed) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

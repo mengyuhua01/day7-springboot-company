@@ -86,5 +86,23 @@ public class CompanyTests {
                 .andExpect(jsonPath("$.id").value(3))
                 .andExpect(jsonPath("$.name").value("OOCL"));
     }
+    @Test
+    @Order(5)
+    void should_delete_company_when_delete_given_valid_id() throws Exception {
+        String createRequestBody = """
+          {
+               "name": "Casco"
+           }
+        """;
+        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(4));
+
+        mockMvc.perform(delete("/companies/{id}", 4).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/companies/{id}", 4).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
 }
