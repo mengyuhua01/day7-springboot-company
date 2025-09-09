@@ -39,5 +39,23 @@ public class CompanyTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
     }
+    @Test
+    @Order(2)
+    void should_return_company_when_get_given_a_valid_id() throws Exception{
+        String requestBody = """
+                  {
+                       "name": "Spring"
+                   }
+                """;
+        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2));
+
+
+        mockMvc.perform(get("/companies/{id}",1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Java"));
+    }
 
 }
