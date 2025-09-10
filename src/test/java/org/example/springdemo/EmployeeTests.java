@@ -2,11 +2,11 @@ package org.example.springdemo;
 
 
 
+import org.example.springdemo.Controller.CompanyController;
+import org.example.springdemo.Controller.EmployeeController;
 import org.example.springdemo.dao.entity.Employee;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.example.springdemo.service.EmployeeService;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,14 +25,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class EmployeeTests {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private EmployeeService employeeService;
+
+    @BeforeEach
+    void setUp(){
+       employeeService.clear();
+    }
+
 
     @Test
-    @Order(1)
     void should_create_employee_when_post_given_a_valid_body() throws Exception{
         String requestBody = """
                   {
@@ -49,19 +55,18 @@ class EmployeeTests {
     }
 
     @Test
-    @Order(2)
     void should_return_employee_when_get_given_a_valid_id() throws Exception{
         String requestBody = """
                   {
-                       "name": "Sara",
+                       "name": "Tom",
                        "age": 20,
                        "salary": 5000.0,
-                       "gender": "female"
+                       "gender": "male"
                    }
                 """;
         mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(2));
+                .andExpect(jsonPath("$.id").value(1));
 
 
         mockMvc.perform(get("/employees/{id}",1).contentType(MediaType.APPLICATION_JSON))
@@ -74,10 +79,20 @@ class EmployeeTests {
     }
 
     @Test
-    @Order(3)
     void should_get_employees_when_get_given_valid_gender() throws Exception{
+        String requestBody = """
+                  {
+                       "name": "Tom",
+                       "age": 20,
+                       "salary": 5000.0,
+                       "gender": "male"
+                   }
+                """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
         Employee expect = new Employee(1, "male", 20, "Tom", 5000.0);
-        mockMvc.perform(get("/employees/gender?gender=male").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/employees?gender=male").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(expect.getId()))
                 .andExpect(jsonPath("$[0].name").value(expect.getName()))
@@ -88,15 +103,35 @@ class EmployeeTests {
     }
 
     @Test
-    @Order(4)
     void should_return_all_employees_when_get_given_no_parameters() throws Exception {
+        String requestBody = """
+                  {
+                       "name": "Tom",
+                       "age": 20,
+                       "salary": 5000.0,
+                       "gender": "male"
+                   }
+                """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+        String requestBody1 = """
+                  {
+                       "name": "Sara",
+                       "age": 20,
+                       "salary": 5000.0,
+                       "gender": "female"
+                   }
+                """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2));
         mockMvc.perform(get("/employees").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
 
     @Test
-    @Order(5)
     void should_update_employee_when_put_given_valid_id_and_body() throws Exception {
         String createRequestBody = """
               {
@@ -108,17 +143,19 @@ class EmployeeTests {
             """;
         mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(3));
+                .andExpect(jsonPath("$.id").value(1));
 
         String updateRequestBody = """
-              {
+               {
+                   "name": "Alice",
                    "age": 30,
-                   "salary": 8000.0
+                   "salary": 8000.0,
+                   "gender": "female"
                }
             """;
-        mockMvc.perform(put("/employees/{id}", 3).contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
+        mockMvc.perform(put("/employees/{id}", 1).contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Alice"))
                 .andExpect(jsonPath("$.age").value(30))
                 .andExpect(jsonPath("$.salary").value(8000.0))
@@ -126,7 +163,6 @@ class EmployeeTests {
     }
 
     @Test
-    @Order(6)
     void should_delete_employee_when_delete_given_valid_id() throws Exception {
         String createRequestBody = """
           {
@@ -138,19 +174,18 @@ class EmployeeTests {
         """;
         mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(4));
+                .andExpect(jsonPath("$.id").value(1));
 
-        mockMvc.perform(delete("/employees/{id}", 4).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/employees/{id}", 1).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/employees/{id}", 4).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/employees/{id}", 1).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @Order(7)
     void should_return_paginated_employees_when_get_given_valid_page_and_size() throws Exception {
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 6; i++) {
             String requestBody = String.format("""
               {
                    "name": "Employee%d",
@@ -161,15 +196,13 @@ class EmployeeTests {
             """, i, 20 + i, 5000 + i * 100);
             mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id").value(i+3));
+                    .andExpect(jsonPath("$.id").value(i));
         }
 
         mockMvc.perform(get("/employees/page?page=2&size=5").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].name").value("Employee3"))
-                .andExpect(jsonPath("$[1].name").value("Employee4"))
-                .andExpect(jsonPath("$[2].name").value("Employee5"));
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].name").value("Employee6"));
     }
 
 

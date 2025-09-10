@@ -2,64 +2,70 @@ package org.example.springdemo.Controller;
 
 import org.example.springdemo.dao.entity.Company;
 
+import org.example.springdemo.service.CompanyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-@RestController
-public class CompanyController {
-    private List<Company> companies = new ArrayList<>();
 
-    @PostMapping("/companies")
-    public ResponseEntity<Company> createCompany(@RequestBody Company company){
-        company.setId(companies.size()+1);
-        companies.add(company);
-        return ResponseEntity.status(HttpStatus.CREATED).body(company);
+@RestController
+@RequestMapping("/companies")
+public class CompanyController {
+
+    @Autowired
+    private CompanyService companyService;
+
+    @PostMapping()
+    public ResponseEntity<Company> createCompany(@RequestBody Company company) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(companyService.createCompany(company));
     }
-    @GetMapping("/companies/{id}")
-    public ResponseEntity<Company> getCompany(@PathVariable long id){
-        Company company = companies.stream().filter(c -> c.getId() == id).findFirst().orElse(null);
-        if (company == null){
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Company> getCompany(@PathVariable long id) {
+        Company company = companyService.getCompany(id);
+        if (company == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(company);
     }
-    @GetMapping("/companies")
+
+    @GetMapping("")
     public List<Company> getCompanies() {
-        return companies;
+        return companyService.getCompanies();
     }
-    @PutMapping("/companies/{id}")
+
+    @PutMapping("/{id}")
     public ResponseEntity<Company> updateCompany(@PathVariable long id, @RequestBody Company updatedCompany) {
-        Company company = companies.stream()
-                .filter(c -> c.getId() == id)
-                .findFirst()
-                .orElse(null);
-        if (company == null){
+        Company company = companyService.updateCompany(id, updatedCompany);
+        if (company == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-         company.setName(updatedCompany.getName());
-         return ResponseEntity.ok(company);
+        company.setName(updatedCompany.getName());
+        return ResponseEntity.ok(company);
     }
-    @DeleteMapping("/companies/{id}")
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable long id) {
-        boolean removed = companies.removeIf(company -> company.getId() == id);
+        boolean removed = companyService.deleteCompany(id);
         if (!removed) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-    @GetMapping("/companies/page")
+
+    @GetMapping("/page")
     public ResponseEntity<List<Company>> getCompaniesByPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size) {
-        int fromIndex = (page - 1) * size;
-        int toIndex = Math.min(fromIndex + size, companies.size());
-        if (fromIndex >= companies.size()) {
+        List<Company> paginatedCompanies = companyService.getCompaniesByPage(page, size);
+        if (paginatedCompanies == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        List<Company> paginatedCompanies = companies.subList(fromIndex, toIndex);
         return ResponseEntity.ok(paginatedCompanies);
     }
+
 }
