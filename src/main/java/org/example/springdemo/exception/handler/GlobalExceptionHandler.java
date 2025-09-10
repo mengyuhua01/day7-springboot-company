@@ -1,5 +1,6 @@
 package org.example.springdemo.exception.handler;
 
+import org.example.springdemo.exception.EmployeeInactiveException;
 import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.example.springdemo.exception.InvalidEmployeeAgeException;
 import org.example.springdemo.exception.SalaryNotMatchAgeException;
@@ -8,24 +9,32 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleEmployeeNotFoundException(Exception e){
-        return  e.getMessage();
+    public String handleEmployeeNotFoundException(Exception e) {
+        return e.getMessage();
     }
 
     @ExceptionHandler(InvalidEmployeeAgeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidEmployeeAgeException(Exception e){
-        return  e.getMessage();
+    public Map<String, String> handleInvalidEmployeeAgeException(Exception e) {
+        return Map.of("message", e.getMessage());
     }
 
     @ExceptionHandler(SalaryNotMatchAgeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleSalaryNotMatchAgeException(Exception e){
-        return  e.getMessage();
+    public Map<String, String> handleSalaryNotMatchAgeException(Exception e) {
+        return Map.of("message", e.getMessage());
+    }
+
+    @ExceptionHandler(EmployeeInactiveException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleEmployeeInactiveException(Exception e) {
+        return Map.of("message", e.getMessage());
     }
 }

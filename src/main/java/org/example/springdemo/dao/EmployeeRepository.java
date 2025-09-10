@@ -44,6 +44,7 @@ public class EmployeeRepository {
         employee.setAge(updatedEmployee.getAge());
         employee.setSalary(updatedEmployee.getSalary());
         employee.setGender(updatedEmployee.getGender());
+        employee.setActiveStatus(updatedEmployee.isActiveStatus());
         return employee;
     }
 

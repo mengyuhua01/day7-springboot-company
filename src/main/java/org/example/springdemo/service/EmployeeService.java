@@ -2,6 +2,7 @@ package org.example.springdemo.service;
 
 import org.example.springdemo.dao.EmployeeRepository;
 import org.example.springdemo.dao.entity.Employee;
+import org.example.springdemo.exception.EmployeeInactiveException;
 import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.example.springdemo.exception.InvalidEmployeeAgeException;
 import org.example.springdemo.exception.SalaryNotMatchAgeException;
@@ -47,7 +48,10 @@ public class EmployeeService {
     public Employee updateEmployee(long id, Employee updatedEmployee) {
         Employee employee = employeeRepository.findEmployeeById(id);
         if(employee == null){
-            throw new RuntimeException("id is not exist");
+            throw new EmployeeNotFoundException("Employee not found");
+        }
+        if(!employee.isActiveStatus()){
+            throw new EmployeeInactiveException("you can't update inactive employee");
         }
         return employeeRepository.updateEmployee(employee,updatedEmployee);
     }

@@ -263,6 +263,42 @@ class EmployeeControllerTests {
                 .andExpect(jsonPath("$.activeStatus").value(true));
     }
 
+    @Test
+    void should_return_error_when_put_given_inactive_employee() throws Exception {
+        // 先创建一个不活跃的员工
+        String createRequestBody = """
+          {
+               "name": "Bob",
+               "age": 28,
+               "salary": 6000.0,
+               "gender": "male"
+           }
+        """;
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRequestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.activeStatus").value(true));
+
+        mockMvc.perform(delete("/employees/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+        String updateRequestBody = """
+           {
+               "name": "Bob Updated",
+               "age": 30,
+               "salary": 6500.0,
+               "gender": "male"
+           }
+        """;
+        mockMvc.perform(put("/employees/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestBody))
+                .andExpect(status().isBadRequest()) // 或者根据你的全局异常处理返回的状态
+                .andExpect(jsonPath("$.message").value("you can't update inactive employee"));
+    }
+
+
 
 
 
