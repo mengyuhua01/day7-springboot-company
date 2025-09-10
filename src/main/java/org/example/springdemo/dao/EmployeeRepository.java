@@ -37,11 +37,7 @@ public class EmployeeRepository {
         return employees;
     }
 
-    public Employee updateEmployee(long id, Employee updatedEmployee) {
-        Employee employee = findEmployeeById(id);
-        if (employee == null) {
-            return null;
-        }
+    public Employee updateEmployee(Employee employee, Employee updatedEmployee) {
         employee.setName(updatedEmployee.getName());
         employee.setAge(updatedEmployee.getAge());
         employee.setSalary(updatedEmployee.getSalary());

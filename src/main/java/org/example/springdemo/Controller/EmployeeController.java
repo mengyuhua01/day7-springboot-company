@@ -20,7 +20,11 @@ public class EmployeeController {
 
     @PostMapping("") //extract
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee){
-        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createEmployee(employee));
+        try{
+            return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createEmployee(employee));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @GetMapping("/{id}")

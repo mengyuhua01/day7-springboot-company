@@ -1,4 +1,4 @@
-package org.example.springdemo;
+package org.example.springdemo.controller;
 
 import org.example.springdemo.dao.CompanyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CompanyTests {
+public class CompanyControllerTests {
 
     @Autowired
     private MockMvc mockMvc;

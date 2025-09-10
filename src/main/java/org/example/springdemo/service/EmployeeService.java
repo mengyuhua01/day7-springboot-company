@@ -2,6 +2,7 @@ package org.example.springdemo.service;
 
 import org.example.springdemo.dao.EmployeeRepository;
 import org.example.springdemo.dao.entity.Employee;
+import org.example.springdemo.exception.InvalidEmployeeAgeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,9 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     public Employee createEmployee(Employee employee) {
+        if(employee.getAge() <18 || employee.getAge()>65){
+            throw new InvalidEmployeeAgeException("age is invalid");
+        }
         return employeeRepository.createEmployee(employee);
     }
 
@@ -31,8 +35,11 @@ public class EmployeeService {
     }
 
     public Employee updateEmployee(long id, Employee updatedEmployee) {
-
-        return employeeRepository.updateEmployee(id,updatedEmployee);
+        Employee employee = employeeRepository.findEmployeeById(id);
+        if(employee == null){
+            throw new RuntimeException("id is not exist");
+        }
+        return employeeRepository.updateEmployee(employee,updatedEmployee);
     }
 
     public boolean deleteEmployee(@PathVariable long id) {
