@@ -265,7 +265,6 @@ class EmployeeControllerTests {
 
     @Test
     void should_return_error_when_put_given_inactive_employee() throws Exception {
-        // 先创建一个不活跃的员工
         String createRequestBody = """
           {
                "name": "Bob",
@@ -294,7 +293,7 @@ class EmployeeControllerTests {
         mockMvc.perform(put("/employees/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRequestBody))
-                .andExpect(status().isBadRequest()) // 或者根据你的全局异常处理返回的状态
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("you can't update inactive employee"));
     }
 
