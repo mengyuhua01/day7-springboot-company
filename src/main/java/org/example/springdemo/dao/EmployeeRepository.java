@@ -1,6 +1,7 @@
 package org.example.springdemo.dao;
 
 import org.example.springdemo.dao.entity.Employee;
+import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -46,8 +47,8 @@ public class EmployeeRepository {
         return employee;
     }
 
-    public boolean deleteEmployee(long id) {
-        return employees.removeIf(employee -> employee.getId() == id);
+    public void deleteEmployee(Employee employee) {
+       employee.setActiveStatus(false);
     }
 
     public List<Employee> getEmployeesByPage(int page, int size) {

@@ -46,11 +46,8 @@ public class EmployeeController {
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable long id) {
-        boolean removed = employeeService.deleteEmployee(id);
-        if (!removed) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.noContent().build();
     }
     @GetMapping("/page")
     public ResponseEntity<List<Employee>> getEmployeesByPage(

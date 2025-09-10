@@ -52,8 +52,12 @@ public class EmployeeService {
         return employeeRepository.updateEmployee(employee,updatedEmployee);
     }
 
-    public boolean deleteEmployee(@PathVariable long id) {
-        return employeeRepository.deleteEmployee(id);
+    public void deleteEmployee(@PathVariable long id) {
+        Employee employee = employeeRepository.findEmployeeById(id);
+        if (employee == null) {
+            throw new EmployeeNotFoundException("Employee not found");
+        }
+        employeeRepository.deleteEmployee(employee);
     }
 
     public List<Employee> getEmployeesByPage(int page, int size) {

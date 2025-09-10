@@ -42,18 +42,18 @@ public class EmployeeServiceTests {
 
     @Test
     public void should_return_employee_when_get_employee_given_valid_id() {
-        Employee employee = new Employee(1, "male", 21, "Tom", 4000.0);
-        when(employeeRepository.findEmployeeById(1)).thenReturn(employee);
-        Employee foundEmployee = employeeService.getEmployee(1);
+        Employee employee = new Employee(1L, "male", 21, "Tom", 4000.0);
+        when(employeeRepository.findEmployeeById(1L)).thenReturn(employee);
+        Employee foundEmployee = employeeService.getEmployee(1L);
         assertEquals(employee, foundEmployee);
-        verify(employeeRepository,times(1)).findEmployeeById(1);
+        verify(employeeRepository,times(1)).findEmployeeById(1L);
     }
 
     @Test
     public void should_not_return_employee_when_get_employee_given_not_existed_id() {
-        when(employeeRepository.findEmployeeById(1)).thenReturn(null);
-        assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployee(1));
-        verify(employeeRepository,times(1)).findEmployeeById(1);
+        when(employeeRepository.findEmployeeById(1L)).thenReturn(null);
+        assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployee(1L));
+        verify(employeeRepository,times(1)).findEmployeeById(1L);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class EmployeeServiceTests {
         employee.setAge(20);
         employee.setSalary(30000.0);
         Employee createdEmployee = new Employee();
-        createdEmployee.setId(1);
+        createdEmployee.setId(1L);
         createdEmployee.setGender("male");
         createdEmployee.setName("Tom");
         createdEmployee.setAge(20);
@@ -73,5 +73,21 @@ public class EmployeeServiceTests {
         when(employeeRepository.createEmployee(employee)).thenReturn(createdEmployee);
         Employee employee1 = employeeService.createEmployee(employee);
         assertTrue(employee1.isActiveStatus());
+    }
+    @Test
+    void should_delete_when_delete_employee_given_id_exists() {
+
+        Employee employee = new Employee(1,"male",25,"John",3000.0);
+        employee.setActiveStatus(true);
+        when(employeeRepository.findEmployeeById(1)).thenReturn(employee);
+        employeeService.deleteEmployee(1);
+        verify(employeeRepository, times(1)).deleteEmployee(employee);
+    }
+
+    @Test
+    void should_throwException_when_deleteEmployee_id_not_Found() {
+        when(employeeRepository.findEmployeeById(1L)).thenReturn(null);
+        assertThrows(EmployeeNotFoundException.class, () -> employeeService.deleteEmployee(1L));
+        verify(employeeRepository, never()).deleteEmployee(any());
     }
 }
