@@ -21,6 +21,7 @@ public class EmployeeRepository {
 
     public Employee createEmployee(Employee employee) {
         employee.setId(++employeeId);
+        employee.setActiveStatus(true);
         employees.add(employee);
         return employee;
     }

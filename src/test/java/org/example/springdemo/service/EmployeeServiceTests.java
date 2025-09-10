@@ -9,11 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.stubbing.Answer;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -56,6 +54,24 @@ public class EmployeeServiceTests {
         when(employeeRepository.findEmployeeById(1)).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployee(1));
         verify(employeeRepository,times(1)).findEmployeeById(1);
+    }
 
+    @Test
+    public void should_return_employee_and_status_is_true_when_create_employee_given_employee() {
+        Employee employee = new Employee();
+        employee.setGender("male");
+        employee.setName("Tom");
+        employee.setAge(20);
+        employee.setSalary(30000.0);
+        Employee createdEmployee = new Employee();
+        createdEmployee.setId(1);
+        createdEmployee.setGender("male");
+        createdEmployee.setName("Tom");
+        createdEmployee.setAge(20);
+        createdEmployee.setSalary(30000.0);
+        createdEmployee.setActiveStatus(true);
+        when(employeeRepository.createEmployee(employee)).thenReturn(createdEmployee);
+        Employee employee1 = employeeService.createEmployee(employee);
+        assertTrue(employee1.isActiveStatus());
     }
 }

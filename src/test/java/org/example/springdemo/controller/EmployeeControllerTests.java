@@ -246,6 +246,24 @@ class EmployeeControllerTests {
 
     }
 
+    @Test
+    void should_create_employee_and_status_is_true_when_post_given_a_valid_body() throws Exception{
+        String requestBody = """
+                  {
+                       "name": "Tom",
+                       "age": 20,
+                       "salary": 5000.0,
+                       "gender": "male"
+                   }
+                """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.activeStatus").value(true));
+    }
+
+
+
 
 
 }
