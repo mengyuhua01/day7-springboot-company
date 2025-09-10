@@ -4,6 +4,7 @@ package org.example.springdemo;
 
 import org.example.springdemo.Controller.CompanyController;
 import org.example.springdemo.Controller.EmployeeController;
+import org.example.springdemo.dao.EmployeeRepository;
 import org.example.springdemo.dao.entity.Employee;
 import org.example.springdemo.service.EmployeeService;
 import org.junit.jupiter.api.*;
@@ -30,11 +31,11 @@ class EmployeeTests {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private EmployeeService employeeService;
+    private EmployeeRepository employeeRepository;
 
     @BeforeEach
     void setUp(){
-       employeeService.clear();
+       employeeRepository.clear();
     }
 
 

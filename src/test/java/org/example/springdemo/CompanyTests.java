@@ -1,6 +1,7 @@
 package org.example.springdemo;
 
 import org.example.springdemo.Controller.CompanyController;
+import org.example.springdemo.dao.CompanyRepository;
 import org.example.springdemo.service.CompanyService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,11 @@ public class CompanyTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private CompanyService companyService;
+    private CompanyRepository companyRepository;
 
     @BeforeEach
     void setUp(){
-       companyService.clear();
+      companyRepository.clear();
     }
 
     @Test

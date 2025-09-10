@@ -1,6 +1,8 @@
 package org.example.springdemo.service;
 
+import org.example.springdemo.dao.EmployeeRepository;
 import org.example.springdemo.dao.entity.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,55 +16,38 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
-    private List<Employee> employees = new ArrayList<>();
 
-    private long employeeId = 0;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
-    public Employee createEmployee(Employee employee){
-        employee.setId(++employeeId);
-        employees.add(employee);
-        return employee;
-    }
-    public Employee getEmployee(long id){
-        Employee employee = employees.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
-        return employee;
+    public Employee createEmployee(Employee employee) {
+        return employeeRepository.createEmployee(employee);
     }
 
-    public List<Employee> queryEmployeeByGender(String gender){
-        return employees.stream().filter(employee -> employee.getGender().equals(gender)).collect(Collectors.toList());
+    public Employee getEmployee(long id) {
+        return employeeRepository.findEmployeeById(id);
+    }
+
+    public List<Employee> queryEmployeeByGender(String gender) {
+        return employeeRepository.findEmployeeByGender(gender);
     }
 
     public List<Employee> getEmployeeList() {
-        return employees;
-    }
-    public Employee updateEmployee(long id, Employee updatedEmployee) {
-        Employee employee = employees.stream()
-                .filter(e -> e.getId() == id)
-                .findFirst()
-                .orElse(null);
-        if (employee == null) {
-            return null;
-        }
-        employee.setName(updatedEmployee.getName());
-        employee.setAge(updatedEmployee.getAge());
-        employee.setSalary(updatedEmployee.getSalary());
-        employee.setGender(updatedEmployee.getGender());
-        return employee;
-    }
-    public boolean deleteEmployee(@PathVariable long id) {
-        return employees.removeIf(employee -> employee.getId() == id);
-    }
-    public List<Employee> getEmployeesByPage(int page,int size) {
-        int fromIndex = (page - 1) * size;
-        int toIndex = Math.min(fromIndex + size, employees.size());
-        if (fromIndex >= employees.size()) {
-            return null;
-        }
-        return employees.subList(fromIndex, toIndex);
+        return employeeRepository.findAllEmployees();
     }
 
-    public void clear(){
-        employeeId = 0;
-        employees.clear();
+    public Employee updateEmployee(long id, Employee updatedEmployee) {
+
+        return employeeRepository.updateEmployee(id,updatedEmployee);
     }
+
+    public boolean deleteEmployee(@PathVariable long id) {
+        return employeeRepository.deleteEmployee(id);
+    }
+
+    public List<Employee> getEmployeesByPage(int page, int size) {
+        return employeeRepository.getEmployeesByPage(page,size);
+    }
+
+
 }

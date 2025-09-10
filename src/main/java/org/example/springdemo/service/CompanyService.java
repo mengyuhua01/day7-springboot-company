@@ -1,6 +1,8 @@
 package org.example.springdemo.service;
 
+import org.example.springdemo.dao.CompanyRepository;
 import org.example.springdemo.dao.entity.Company;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,28 +12,25 @@ import java.util.List;
 
 @Service
 public class CompanyService {
-    private List<Company> companies = new ArrayList<>();
-    private long companyId = 0;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     public Company createCompany(Company company) {
-        company.setId(++companyId);
-        companies.add(company);
-        return company;
+
+        return companyRepository.createCompany(company);
     }
 
     public Company getCompany(long id) {
-       return companies.stream().filter(c -> c.getId() == id).findFirst().orElse(null);
+        return companyRepository.findCompanyById(id);
     }
 
     public List<Company> getCompanies() {
-        return companies;
+        return companyRepository.findAllCompanies();
     }
 
     public Company updateCompany(long id, Company updatedCompany) {
-        Company company = companies.stream()
-                .filter(c -> c.getId() == id)
-                .findFirst()
-                .orElse(null);
+
+        Company company = companyRepository.updateCompany(id,updatedCompany);
         if (company == null) {
             return null;
         }
@@ -40,19 +39,12 @@ public class CompanyService {
     }
 
     public boolean deleteCompany(long id) {
-       return  companies.removeIf(company -> company.getId() == id);
+        return companyRepository.deleteCompany(id);
     }
 
     public List<Company> getCompaniesByPage(int page, int size) {
-        int fromIndex = (page - 1) * size;
-        int toIndex = Math.min(fromIndex + size, companies.size());
-        if (fromIndex >= companies.size()) {
-            return null;
-        }
-        return companies.subList(fromIndex,toIndex);
+       return companyRepository.getCompaniesByPage(page,size);
     }
-    public void clear() {
-        companies.clear();
-        companyId = 0;
-    }
+
+
 }
