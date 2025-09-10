@@ -231,6 +231,20 @@ class EmployeeControllerTests {
                 .andExpect(status().isNotFound());
 
     }
+    @Test
+    public void should_not_create_employee_when_post_given_employee_age_over_30_and_salary_below_200000() throws Exception {
+        String requestBody = """
+                  {
+                       "name": "Tom",
+                       "age": 31,
+                       "salary": 5000.0,
+                       "gender": "male"
+                   }
+                """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest());
+
+    }
 
 
 

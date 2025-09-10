@@ -4,6 +4,7 @@ import org.example.springdemo.dao.EmployeeRepository;
 import org.example.springdemo.dao.entity.Employee;
 import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.example.springdemo.exception.InvalidEmployeeAgeException;
+import org.example.springdemo.exception.SalaryNotMatchAgeException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,14 @@ public class EmployeeServiceTests {
         assertThrows(InvalidEmployeeAgeException.class, () -> employeeService.createEmployee(employee1));
         verify(employeeRepository,times(0)).createEmployee(employee);
     }
+
+    @Test
+    public void should_not_create_employee_when_create_Employee_given_employee_age_later_30_and_salary_below_20000() {
+        Employee employee = new Employee(1, "male", 31, "Tom", 3000.0);
+        assertThrows(SalaryNotMatchAgeException.class, () -> employeeService.createEmployee(employee));
+        verify(employeeRepository,times(0)).createEmployee(employee);
+    }
+
 
     @Test
     public void should_return_employee_when_get_employee_given_valid_id() {
