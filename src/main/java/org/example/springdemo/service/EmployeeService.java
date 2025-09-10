@@ -2,6 +2,7 @@ package org.example.springdemo.service;
 
 import org.example.springdemo.dao.EmployeeRepository;
 import org.example.springdemo.dao.entity.Employee;
+import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.example.springdemo.exception.InvalidEmployeeAgeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,12 @@ public class EmployeeService {
     }
 
     public Employee getEmployee(long id) {
-        return employeeRepository.findEmployeeById(id);
+
+        Employee employee = employeeRepository.findEmployeeById(id);
+        if(employee == null){
+            throw new EmployeeNotFoundException("employee is not exist");
+        }
+        return employee;
     }
 
     public List<Employee> queryEmployeeByGender(String gender) {

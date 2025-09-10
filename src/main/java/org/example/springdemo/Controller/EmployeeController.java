@@ -29,13 +29,12 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployee(@PathVariable long id){
-        Employee employee = employeeService.getEmployee(id);
-        if (employee == null){
+        try{
+           return ResponseEntity.ok(employeeService.getEmployee(id));
+        }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(employee);
     }
-
 
     @GetMapping(path = "",params = {"genders"} )  //modify api
     public List<Employee> queryEmployeeByGender(@RequestParam String gender){

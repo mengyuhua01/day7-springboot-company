@@ -212,6 +212,25 @@ class EmployeeControllerTests {
                 .andExpect(status().isBadRequest());
 
     }
+    @Test
+    public void should_not_return_employee_when_post_given_not_existed_employee_id() throws Exception {
+        String requestBody = """
+                  {
+                       "name": "Tom",
+                       "age": 20,
+                       "salary": 5000.0,
+                       "gender": "male"
+                   }
+                """;
+        mockMvc.perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+
+
+        mockMvc.perform(get("/employees/{id}",2).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+    }
 
 
 
