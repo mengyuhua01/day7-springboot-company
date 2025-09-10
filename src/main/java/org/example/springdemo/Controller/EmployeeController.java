@@ -20,20 +20,12 @@ public class EmployeeController {
 
     @PostMapping("") //extract
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee){
-        try{
-            return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createEmployee(employee));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createEmployee(employee));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployee(@PathVariable long id){
-        try{
-           return ResponseEntity.ok(employeeService.getEmployee(id));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(employeeService.getEmployee(id));
     }
 
     @GetMapping(path = "",params = {"genders"} )  //modify api
