@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "t_company")
 @Data
@@ -16,5 +18,9 @@ public class Company {
     private long id;
 
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private List<Employee> employees;
 
 }

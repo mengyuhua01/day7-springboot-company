@@ -71,7 +71,7 @@ public class EmployeeService {
     }
 
     public List<Employee> getEmployeesByPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         return employeeRepository.getEmployeesByPage(pageable);
     }
 

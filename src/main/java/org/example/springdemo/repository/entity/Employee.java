@@ -1,11 +1,14 @@
 package org.example.springdemo.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "t_employee")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,14 +18,10 @@ public class Employee {
     private double salary;
     private String gender;
     private boolean activeStatus;
+    @Column(name = "company_id")
+    private long companyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
-    private Company company;
 
-    public Employee() {
-
-    }
 
     public Employee(long id, String gender, int age, String name, double salary) {
         this.age = age;
