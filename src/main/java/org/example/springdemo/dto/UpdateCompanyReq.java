@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateEmployeeReq {
+public class UpdateCompanyReq {
     private long id;
-    private int age;
-    private double salary;
-    private String gender;
     private String name;
+
+
+
 }
+
