@@ -25,7 +25,7 @@ public class CompanyControllerTests {
     @Autowired
     private CompanyRepository companyRepository;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -79,7 +79,7 @@ public class CompanyControllerTests {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         JsonNode jsonNode1 = objectMapper.readTree(response1);
-        long id1 = jsonNode1.get("id").asLong();
+        jsonNode1.get("id").asLong();
         String requestBody2 = """
                   {
                        "name": "JAVA"
@@ -89,7 +89,7 @@ public class CompanyControllerTests {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         JsonNode jsonNode2 = objectMapper.readTree(response2);
-        long id2 = jsonNode2.get("id").asLong();
+        jsonNode2.get("id").asLong();
         mockMvc.perform(get("/companies").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -109,7 +109,7 @@ public class CompanyControllerTests {
         long id = jsonNode.get("id").asLong();
         String updateRequestBody = String.format("""
                   {
-                       "id": %d, 
+                       "id": %d,
                        "name": "OOCL"
                    }
                 """,id);

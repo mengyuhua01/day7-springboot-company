@@ -214,7 +214,7 @@ class EmployeeControllerTests {
                        "gender": "male"
                    }
                 """;
-        long id = createEmployee(requestBody);
+      createEmployee(requestBody);
         mockMvc.perform(get("/employees/{id}", 2).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 

@@ -97,7 +97,6 @@ public class EmployeeServiceTests {
         updatedData.setAge(30);
         updatedData.setId(1);
         updatedData.setName("Tom");
-        Employee employee = new Employee();
         when(employeeRepository.findEmployeeById(updatedData.getId())).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class,
                 () -> employeeService.updateEmployee(updatedData));
