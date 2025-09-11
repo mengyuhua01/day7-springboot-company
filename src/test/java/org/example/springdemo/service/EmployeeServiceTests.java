@@ -1,5 +1,6 @@
 package org.example.springdemo.service;
 
+import org.example.springdemo.dto.UpdateEmployeeReq;
 import org.example.springdemo.repository.EmployeeRepository;
 import org.example.springdemo.repository.entity.Employee;
 import org.example.springdemo.exception.EmployeeInactiveException;
@@ -92,12 +93,12 @@ public class EmployeeServiceTests {
     }
     @Test
     void should_throw_NotFoundException_when_update_Employee_id_not_found() {
-        Employee updatedData = new Employee();
+        UpdateEmployeeReq updatedData = new UpdateEmployeeReq();
         updatedData.setAge(30);
         updatedData.setId(1);
         updatedData.setName("Tom");
-        updatedData.setActiveStatus(true);
-        when(employeeRepository.updateEmployee(updatedData)).thenReturn(null);
+        Employee employee = new Employee();
+        when(employeeRepository.updateEmployee(employee)).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class,
                 () -> employeeService.updateEmployee(updatedData));
         verify(employeeRepository, times(1)).updateEmployee(any());
@@ -107,8 +108,10 @@ public class EmployeeServiceTests {
 
         Employee inactive = new Employee(1L, "male", 30, "Tom", 3000.0);
         inactive.setActiveStatus(false);
-        Employee updatedData = inactive;
+        UpdateEmployeeReq updatedData = new UpdateEmployeeReq();
         updatedData.setAge(30);
+        updatedData.setId(1);
+        updatedData.setName("Tom");
         assertThrows(EmployeeInactiveException.class,
                 () -> employeeService.updateEmployee(updatedData));
         verify(employeeRepository, never()).updateEmployee(any());
@@ -117,9 +120,11 @@ public class EmployeeServiceTests {
     @Test
     void should_update_successfully_when_update_employee_given_valid_params() {
         // Given
-        Employee updatedData = new Employee(1L, "male", 30, "Alice", 3000.0);
-        updatedData.setActiveStatus(true);
+        Employee updatedData = new Employee();
+        updatedData.setAge(30);
+        updatedData.setId(1);
         updatedData.setName("Alice Updated");
+        updatedData.setActiveStatus(true);
         Employee mockResult = new Employee(1L, "male", 30, "Alice Updated", 3000.0);
         mockResult.setActiveStatus(true);
         when(employeeRepository.updateEmployee(updatedData)).thenReturn(mockResult);

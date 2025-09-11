@@ -1,5 +1,6 @@
 package org.example.springdemo.service;
 
+import org.example.springdemo.dto.UpdateEmployeeReq;
 import org.example.springdemo.repository.EmployeeRepository;
 import org.example.springdemo.repository.entity.Employee;
 import org.example.springdemo.exception.EmployeeInactiveException;
@@ -47,20 +48,26 @@ public class EmployeeService {
         return employeeRepository.findAllEmployees();
     }
 
-    public Employee updateEmployee(Employee updatedEmployee) {
-        if(!updatedEmployee.isActiveStatus()){
-            throw new EmployeeInactiveException("you can't update inactive employee");
-        }
-        Employee employee = employeeRepository.updateEmployee(updatedEmployee);
+    public Employee updateEmployee(UpdateEmployeeReq updatedEmployee) {
+        Employee employee = getEmployeeById(updatedEmployee.getId());
         if (employee == null) {
             throw new EmployeeNotFoundException("employee don't exist");
         }
+        if (!employee.isActiveStatus()) {
+            throw new EmployeeInactiveException("you can't update inactive employee");
+        }
+        employee.setAge(updatedEmployee.getAge());
+        employee.setName(updatedEmployee.getName());
+        employee.setGender(updatedEmployee.getGender());
+        employee.setSalary(updatedEmployee.getSalary());
+        employeeRepository.updateEmployee(employee);
+
         return employee;
     }
 
     public void deleteEmployee(@PathVariable long id) {
         Employee employee = getEmployeeById(id);
-        if(employee == null){
+        if (employee == null) {
             throw new EmployeeNotFoundException("employee don't exist");
         }
         employeeRepository.deleteEmployee(employee);

@@ -138,10 +138,9 @@ class EmployeeControllerTests {
                        "age": 30,
                        "salary": 8000.0,
                        "gender": "female",
-                       "activeStatus": true
                    }
                 """, id);
-        mockMvc.perform(put("/employees/{id}", id).contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
+        mockMvc.perform(put("/employees").contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value("Alice"))

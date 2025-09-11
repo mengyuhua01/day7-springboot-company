@@ -1,5 +1,6 @@
 package org.example.springdemo.repository.imp;
 
+import org.example.springdemo.dto.UpdateEmployeeReq;
 import org.example.springdemo.repository.EmployeeRepository;
 import org.example.springdemo.repository.dao.EmployeeJpaRepository;
 import org.example.springdemo.repository.entity.Employee;

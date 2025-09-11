@@ -1,5 +1,6 @@
 package org.example.springdemo.Controller;
 
+import org.example.springdemo.dto.UpdateEmployeeReq;
 import org.example.springdemo.repository.entity.Employee;
 import org.example.springdemo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ public class EmployeeController {
         return employeeService.getEmployeeList();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee updatedEmployee) {
+    @PutMapping("")
+    public ResponseEntity<Employee> updateEmployee(@RequestBody UpdateEmployeeReq updatedEmployee) {
         Employee employee = employeeService.updateEmployee(updatedEmployee);
         return ResponseEntity.ok(employee);
     }

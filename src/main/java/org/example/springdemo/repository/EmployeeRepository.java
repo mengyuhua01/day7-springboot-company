@@ -1,5 +1,6 @@
 package org.example.springdemo.repository;
 
+import org.example.springdemo.dto.UpdateEmployeeReq;
 import org.example.springdemo.repository.entity.Employee;
 import org.springframework.data.domain.Pageable;
 
