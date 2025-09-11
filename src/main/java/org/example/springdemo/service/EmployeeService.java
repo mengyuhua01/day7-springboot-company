@@ -50,9 +50,6 @@ public class EmployeeService {
 
     public Employee updateEmployee(UpdateEmployeeReq updatedEmployee) {
         Employee employee = getEmployeeById(updatedEmployee.getId());
-        if (employee == null) {
-            throw new EmployeeNotFoundException("employee don't exist");
-        }
         if (!employee.isActiveStatus()) {
             throw new EmployeeInactiveException("you can't update inactive employee");
         }

@@ -1,9 +1,12 @@
 package org.example.springdemo.service;
 
-import org.example.springdemo.repository.imp.CompanyRepository;
+import org.example.springdemo.dto.UpdateCompanyReq;
+import org.example.springdemo.repository.CompanyRepository;
 import org.example.springdemo.repository.entity.Company;
 import org.example.springdemo.exception.CompanyNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,9 +33,13 @@ public class CompanyService {
         return companyRepository.findAllCompanies();
     }
 
-    public Company updateCompany(long id, Company updatedCompany) {
-        Company company = getCompany(id);
-        return companyRepository.updateCompany(company, updatedCompany);
+    public Company updateCompany(UpdateCompanyReq updatedCompany) {
+        Company company = getCompany(updatedCompany.getId());
+        if(company  == null){
+            throw new CompanyNotFoundException("company not found");
+        }
+        company.setName(updatedCompany.getName());
+        return companyRepository.updateCompany(company);
     }
 
     public void deleteCompany(long id) {
@@ -41,7 +48,8 @@ public class CompanyService {
     }
 
     public List<Company> getCompaniesByPage(int page, int size) {
-        return companyRepository.getCompaniesByPage(page, size);
+        Pageable pageable = PageRequest.of(page -1, size);
+        return companyRepository.getCompaniesByPage(pageable);
     }
 
 

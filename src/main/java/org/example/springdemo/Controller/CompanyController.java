@@ -1,5 +1,6 @@
 package org.example.springdemo.Controller;
 
+import org.example.springdemo.dto.UpdateCompanyReq;
 import org.example.springdemo.repository.entity.Company;
 import org.example.springdemo.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,9 @@ public class CompanyController {
         return companyService.getCompanies();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Company> updateCompany(@PathVariable long id, @RequestBody Company updatedCompany) {
-        Company company = companyService.updateCompany(id, updatedCompany);
+    @PutMapping("")
+    public ResponseEntity<Company> updateCompany(@RequestBody UpdateCompanyReq updatedCompany) {
+        Company company = companyService.updateCompany(updatedCompany);
         return ResponseEntity.ok(company);
     }
 

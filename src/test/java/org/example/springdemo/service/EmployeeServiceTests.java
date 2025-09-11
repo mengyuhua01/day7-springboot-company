@@ -98,10 +98,10 @@ public class EmployeeServiceTests {
         updatedData.setId(1);
         updatedData.setName("Tom");
         Employee employee = new Employee();
-        when(employeeRepository.updateEmployee(employee)).thenReturn(null);
+        when(employeeRepository.findEmployeeById(updatedData.getId())).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class,
                 () -> employeeService.updateEmployee(updatedData));
-        verify(employeeRepository, times(1)).updateEmployee(any());
+        verify(employeeRepository, never()).updateEmployee(any());
     }
     @Test
     void should_throw_EmployeeInactiveException_when_updateEmployee_given_status_false() {
@@ -112,6 +112,7 @@ public class EmployeeServiceTests {
         updatedData.setAge(30);
         updatedData.setId(1);
         updatedData.setName("Tom");
+        when(employeeRepository.findEmployeeById(updatedData.getId())).thenReturn(inactive);
         assertThrows(EmployeeInactiveException.class,
                 () -> employeeService.updateEmployee(updatedData));
         verify(employeeRepository, never()).updateEmployee(any());
@@ -120,18 +121,20 @@ public class EmployeeServiceTests {
     @Test
     void should_update_successfully_when_update_employee_given_valid_params() {
         // Given
-        Employee updatedData = new Employee();
+        UpdateEmployeeReq updatedData = new UpdateEmployeeReq();
         updatedData.setAge(30);
         updatedData.setId(1);
         updatedData.setName("Alice Updated");
-        updatedData.setActiveStatus(true);
+        Employee foundResult = new Employee(1L, "male", 30, "Alice", 3000.0);
+        foundResult.setActiveStatus(true);
         Employee mockResult = new Employee(1L, "male", 30, "Alice Updated", 3000.0);
         mockResult.setActiveStatus(true);
-        when(employeeRepository.updateEmployee(updatedData)).thenReturn(mockResult);
+        when(employeeRepository.findEmployeeById(1L)).thenReturn(foundResult);
+        when(employeeRepository.updateEmployee(any(Employee.class))).thenReturn(mockResult);
         Employee realResult = employeeService.updateEmployee(updatedData);
         assertNotNull(realResult);
         assertEquals("Alice Updated", realResult.getName());
-        verify(employeeRepository, times(1)).updateEmployee(updatedData);
+        verify(employeeRepository, times(1)).updateEmployee(any(Employee.class));
     }
 
 

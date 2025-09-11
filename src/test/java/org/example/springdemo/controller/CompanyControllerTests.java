@@ -1,6 +1,8 @@
 package org.example.springdemo.controller;
 
-import org.example.springdemo.repository.imp.CompanyRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.springdemo.repository.CompanyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,39 +25,49 @@ public class CompanyControllerTests {
     @Autowired
     private CompanyRepository companyRepository;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
-    void setUp(){
-      companyRepository.clear();
+    void setUp() {
+        companyRepository.clear();
     }
 
     @Test
-    void should_create_company_when_post_given_a_valid_body() throws Exception{
+    void should_create_company_when_post_given_a_valid_body() throws Exception {
         String requestBody = """
                   {
                       "name": "Java"
                    }
                 """;
-        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        String response = mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andReturn().getResponse().getContentAsString();
+        JsonNode jsonNode = objectMapper.readTree(response);
+        long id = jsonNode.get("id").asLong();
+        mockMvc.perform(get("/companies/{id}", id).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value("Java"));
     }
+
     @Test
-    void should_return_company_when_get_given_a_valid_id() throws Exception{
+    void should_return_company_when_get_given_a_valid_id() throws Exception {
         String requestBody = """
                   {
                        "name": "Spring"
                    }
                 """;
-        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        String response = mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
-
-
-        mockMvc.perform(get("/companies/{id}",1).contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        JsonNode jsonNode = objectMapper.readTree(response);
+        long id = jsonNode.get("id").asLong();
+        mockMvc.perform(get("/companies/{id}", id).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value("Spring"));
     }
+
     @Test
     void should_return_all_companies_when_get_given_no_parameters() throws Exception {
         String requestBody = """
@@ -63,21 +75,26 @@ public class CompanyControllerTests {
                        "name": "Spring"
                    }
                 """;
-        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        String response1 = mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
-        String requestBody1 = """
+                .andReturn().getResponse().getContentAsString();
+        JsonNode jsonNode1 = objectMapper.readTree(response1);
+        long id1 = jsonNode1.get("id").asLong();
+        String requestBody2 = """
                   {
                        "name": "JAVA"
                    }
                 """;
-        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        String response2 = mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody2))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(2));
+                .andReturn().getResponse().getContentAsString();
+        JsonNode jsonNode2 = objectMapper.readTree(response2);
+        long id2 = jsonNode2.get("id").asLong();
         mockMvc.perform(get("/companies").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
+
     @Test
     void should_update_company_when_put_given_valid_id_and_body() throws Exception {
         String createRequestBody = """
@@ -85,48 +102,54 @@ public class CompanyControllerTests {
                        "name": "OOP"
                    }
                 """;
-        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
+        String response = mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
-
-        String updateRequestBody = """
+                .andReturn().getResponse().getContentAsString();
+        JsonNode jsonNode = objectMapper.readTree(response);
+        long id = jsonNode.get("id").asLong();
+        String updateRequestBody = String.format("""
                   {
+                       "id": %d, 
                        "name": "OOCL"
                    }
-                """;
-        mockMvc.perform(put("/companies/{id}", 1).contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
+                """,id);
+        mockMvc.perform(put("/companies").contentType(MediaType.APPLICATION_JSON).content(updateRequestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value("OOCL"));
     }
+
     @Test
     void should_delete_company_when_delete_given_valid_id() throws Exception {
         String createRequestBody = """
-          {
-               "name": "Casco"
-           }
-        """;
-        mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
+                  {
+                       "name": "Casco"
+                   }
+                """;
+        String response = mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(createRequestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andReturn().getResponse().getContentAsString();
+        JsonNode jsonNode = objectMapper.readTree(response);
+        long id = jsonNode.get("id").asLong();
 
-        mockMvc.perform(delete("/companies/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/companies/{id}", id).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/companies/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/companies/{id}", id).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     void should_return_paginated_companies_when_get_given_valid_page_and_size() throws Exception {
         for (int i = 1; i <= 5; i++) {
             String requestBody = String.format("""
-              {
-                   "name": "Company%d"
-               }
-            """, i);
+                      {
+                           "name": "Company%d"
+                       }
+                    """, i);
             mockMvc.perform(post("/companies").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id").value(i));
+                    .andReturn().getResponse().getContentAsString();
         }
 
         mockMvc.perform(get("/companies/page?page=1&size=5").contentType(MediaType.APPLICATION_JSON))
