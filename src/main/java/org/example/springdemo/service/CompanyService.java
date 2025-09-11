@@ -1,13 +1,11 @@
 package org.example.springdemo.service;
 
-import org.example.springdemo.dao.CompanyRepository;
-import org.example.springdemo.dao.entity.Company;
+import org.example.springdemo.repository.imp.CompanyRepository;
+import org.example.springdemo.repository.entity.Company;
+import org.example.springdemo.exception.CompanyNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,7 +19,11 @@ public class CompanyService {
     }
 
     public Company getCompany(long id) {
-        return companyRepository.findCompanyById(id);
+        Company company = companyRepository.findCompanyById(id);
+        if (company == null) {
+            throw new CompanyNotFoundException("id don't exist");
+        }
+        return company;
     }
 
     public List<Company> getCompanies() {
@@ -29,21 +31,17 @@ public class CompanyService {
     }
 
     public Company updateCompany(long id, Company updatedCompany) {
-
-        Company company = companyRepository.updateCompany(id,updatedCompany);
-        if (company == null) {
-            return null;
-        }
-        company.setName(updatedCompany.getName());
-        return company;
+        Company company = getCompany(id);
+        return companyRepository.updateCompany(company, updatedCompany);
     }
 
-    public boolean deleteCompany(long id) {
-        return companyRepository.deleteCompany(id);
+    public void deleteCompany(long id) {
+        Company company = getCompany(id);
+        companyRepository.deleteCompany(company);
     }
 
     public List<Company> getCompaniesByPage(int page, int size) {
-       return companyRepository.getCompaniesByPage(page,size);
+        return companyRepository.getCompaniesByPage(page, size);
     }
 
 

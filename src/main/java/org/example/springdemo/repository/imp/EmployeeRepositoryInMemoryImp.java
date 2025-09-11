@@ -1,7 +1,7 @@
-package org.example.springdemo.dao;
+package org.example.springdemo.repository.imp;
 
-import org.example.springdemo.dao.entity.Employee;
-import org.example.springdemo.exception.EmployeeNotFoundException;
+import org.example.springdemo.repository.EmployeeRepository;
+import org.example.springdemo.repository.entity.Employee;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class EmployeeRepository {
+public class EmployeeRepositoryInMemoryImp {
 
     private List<Employee> employees = new ArrayList<>();
 
     private long employeeId = 0;
 
-    public void clear(){
+    public void clear() {
         employeeId = 0;
         employees.clear();
     }
@@ -32,14 +32,14 @@ public class EmployeeRepository {
     }
 
     public List<Employee> findEmployeeByGender(String gender) {
-       return employees.stream().filter(employee -> employee.getGender().equals(gender)).collect(Collectors.toList());
+        return employees.stream().filter(employee -> employee.getGender().equals(gender)).collect(Collectors.toList());
     }
 
     public List<Employee> findAllEmployees() {
         return employees;
     }
 
-    public Employee updateEmployee(Employee employee, Employee updatedEmployee) {
+    public Employee updateEmployee(Employee employee,Employee updatedEmployee) {
         employee.setName(updatedEmployee.getName());
         employee.setAge(updatedEmployee.getAge());
         employee.setSalary(updatedEmployee.getSalary());
@@ -49,7 +49,7 @@ public class EmployeeRepository {
     }
 
     public void deleteEmployee(Employee employee) {
-       employee.setActiveStatus(false);
+        employee.setActiveStatus(false);
     }
 
     public List<Employee> getEmployeesByPage(int page, int size) {
@@ -58,6 +58,6 @@ public class EmployeeRepository {
         if (fromIndex >= toIndex) {
             return null;
         }
-        return employees.subList(fromIndex,toIndex);
+        return employees.subList(fromIndex, toIndex);
     }
 }

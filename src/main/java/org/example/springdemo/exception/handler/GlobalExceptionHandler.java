@@ -1,9 +1,6 @@
 package org.example.springdemo.exception.handler;
 
-import org.example.springdemo.exception.EmployeeInactiveException;
-import org.example.springdemo.exception.EmployeeNotFoundException;
-import org.example.springdemo.exception.InvalidEmployeeAgeException;
-import org.example.springdemo.exception.SalaryNotMatchAgeException;
+import org.example.springdemo.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,6 +32,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmployeeInactiveException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleEmployeeInactiveException(Exception e) {
+        return Map.of("message", e.getMessage());
+    }
+
+    @ExceptionHandler(CompanyNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleCompanyNotFoundException(Exception e) {
         return Map.of("message", e.getMessage());
     }
 }

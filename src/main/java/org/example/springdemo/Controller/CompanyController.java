@@ -1,6 +1,6 @@
 package org.example.springdemo.Controller;
 
-import org.example.springdemo.dao.entity.Company;
+import org.example.springdemo.repository.entity.Company;
 import org.example.springdemo.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,21 +14,16 @@ import java.util.List;
 public class CompanyController {
 
     @Autowired
-    private CompanyService companyService;
+    private CompanyService companyService;  //TODO
 
     @PostMapping()
     public ResponseEntity<Company> createCompany(@RequestBody Company company) {
-
         return ResponseEntity.status(HttpStatus.CREATED).body(companyService.createCompany(company));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Company> getCompany(@PathVariable long id) {
-        Company company = companyService.getCompany(id);
-        if (company == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(company);
+        return ResponseEntity.ok(companyService.getCompany(id));
     }
 
     @GetMapping("")
@@ -39,19 +34,12 @@ public class CompanyController {
     @PutMapping("/{id}")
     public ResponseEntity<Company> updateCompany(@PathVariable long id, @RequestBody Company updatedCompany) {
         Company company = companyService.updateCompany(id, updatedCompany);
-        if (company == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        company.setName(updatedCompany.getName());
         return ResponseEntity.ok(company);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable long id) {
-        boolean removed = companyService.deleteCompany(id);
-        if (!removed) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        companyService.deleteCompany(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

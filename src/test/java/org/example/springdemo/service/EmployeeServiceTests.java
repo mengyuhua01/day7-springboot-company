@@ -1,7 +1,7 @@
 package org.example.springdemo.service;
 
-import org.example.springdemo.dao.EmployeeRepository;
-import org.example.springdemo.dao.entity.Employee;
+import org.example.springdemo.repository.EmployeeRepository;
+import org.example.springdemo.repository.entity.Employee;
 import org.example.springdemo.exception.EmployeeInactiveException;
 import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.example.springdemo.exception.InvalidEmployeeAgeException;
@@ -34,7 +34,7 @@ public class EmployeeServiceTests {
     }
 
     @Test
-    public void should_not_create_employee_when_create_Employee_given_employee_age_later_30_and_salary_below_20000() {
+    public void should_not_create_employee_when_create_Employee_given_employee_age_later_equal_30_and_salary_below_20000() {
         Employee employee = new Employee(1, "male", 31, "Tom", 3000.0);
         assertThrows(SalaryNotMatchAgeException.class, () -> employeeService.createEmployee(employee));
         verify(employeeRepository,times(0)).createEmployee(employee);
@@ -45,7 +45,7 @@ public class EmployeeServiceTests {
     public void should_return_employee_when_get_employee_given_valid_id() {
         Employee employee = new Employee(1L, "male", 21, "Tom", 4000.0);
         when(employeeRepository.findEmployeeById(1L)).thenReturn(employee);
-        Employee foundEmployee = employeeService.getEmployee(1L);
+        Employee foundEmployee = employeeService.getEmployeeById(1L);
         assertEquals(employee, foundEmployee);
         verify(employeeRepository,times(1)).findEmployeeById(1L);
     }
@@ -53,7 +53,7 @@ public class EmployeeServiceTests {
     @Test
     public void should_not_return_employee_when_get_employee_given_not_existed_id() {
         when(employeeRepository.findEmployeeById(1L)).thenReturn(null);
-        assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployee(1L));
+        assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployeeById(1L));
         verify(employeeRepository,times(1)).findEmployeeById(1L);
     }
 
@@ -94,48 +94,39 @@ public class EmployeeServiceTests {
     void should_throw_NotFoundException_when_update_Employee_id_not_found() {
         Employee updatedData = new Employee();
         updatedData.setAge(30);
+        updatedData.setId(1);
         updatedData.setName("Tom");
-        when(employeeRepository.findEmployeeById(1)).thenReturn(null);
+        updatedData.setActiveStatus(true);
+        when(employeeRepository.updateEmployee(updatedData)).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class,
-                () -> employeeService.updateEmployee(1, updatedData));
-        verify(employeeRepository, times(1)).findEmployeeById(1L);
-        verify(employeeRepository, never()).updateEmployee(any(), any());
+                () -> employeeService.updateEmployee(updatedData));
+        verify(employeeRepository, times(1)).updateEmployee(any());
     }
     @Test
     void should_throw_EmployeeInactiveException_when_updateEmployee_given_status_false() {
 
         Employee inactive = new Employee(1L, "male", 30, "Tom", 3000.0);
         inactive.setActiveStatus(false);
-        Employee updatedData = new Employee();
+        Employee updatedData = inactive;
         updatedData.setAge(30);
-        when(employeeRepository.findEmployeeById(1L)).thenReturn(inactive);
         assertThrows(EmployeeInactiveException.class,
-                () -> employeeService.updateEmployee(1L, updatedData));
-        verify(employeeRepository, times(1)).findEmployeeById(1L);
-        verify(employeeRepository, never()).updateEmployee(any(), any());
+                () -> employeeService.updateEmployee(updatedData));
+        verify(employeeRepository, never()).updateEmployee(any());
     }
 
     @Test
     void should_update_successfully_when_update_employee_given_valid_params() {
         // Given
-        Employee existing = new Employee(1L, "male", 30, "Alice", 3000.0);
-        existing.setActiveStatus(true);
-        Employee updatedData = new Employee();
+        Employee updatedData = new Employee(1L, "male", 30, "Alice", 3000.0);
         updatedData.setActiveStatus(true);
-        updatedData.setGender("male");
-        updatedData.setName("Alice updated");
-        updatedData.setAge(30);
-        updatedData.setSalary(30000.0);
-        updatedData.setActiveStatus(true);
+        updatedData.setName("Alice Updated");
         Employee mockResult = new Employee(1L, "male", 30, "Alice Updated", 3000.0);
-        when(employeeRepository.findEmployeeById(1L)).thenReturn(existing);
-        when(employeeRepository.updateEmployee(existing, updatedData)).thenReturn(mockResult);
-
-        Employee realResult = employeeService.updateEmployee(1L, updatedData);
+        mockResult.setActiveStatus(true);
+        when(employeeRepository.updateEmployee(updatedData)).thenReturn(mockResult);
+        Employee realResult = employeeService.updateEmployee(updatedData);
         assertNotNull(realResult);
         assertEquals("Alice Updated", realResult.getName());
-        verify(employeeRepository, times(1)).findEmployeeById(1L);
-        verify(employeeRepository, times(1)).updateEmployee(existing, updatedData);
+        verify(employeeRepository, times(1)).updateEmployee(updatedData);
     }
 
 

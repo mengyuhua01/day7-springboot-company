@@ -1,12 +1,14 @@
 package org.example.springdemo.service;
 
-import org.example.springdemo.dao.EmployeeRepository;
-import org.example.springdemo.dao.entity.Employee;
+import org.example.springdemo.repository.EmployeeRepository;
+import org.example.springdemo.repository.entity.Employee;
 import org.example.springdemo.exception.EmployeeInactiveException;
 import org.example.springdemo.exception.EmployeeNotFoundException;
 import org.example.springdemo.exception.InvalidEmployeeAgeException;
 import org.example.springdemo.exception.SalaryNotMatchAgeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -19,19 +21,19 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     public Employee createEmployee(Employee employee) {
-        if(employee.getAge() <18 || employee.getAge()>65){
+        if (employee.getAge() < 18 || employee.getAge() > 65) {
             throw new InvalidEmployeeAgeException("age is invalid");
         }
-        if(employee.getAge()>30 && employee.getSalary()<20000){
+        if (employee.getAge() >= 30 && employee.getSalary() < 20000) {
             throw new SalaryNotMatchAgeException("salary must be later than 20000 when age is later than 30");
         }
         return employeeRepository.createEmployee(employee);
     }
 
-    public Employee getEmployee(long id) {
+    public Employee getEmployeeById(long id) {
 
         Employee employee = employeeRepository.findEmployeeById(id);
-        if(employee == null){
+        if (employee == null) {
             throw new EmployeeNotFoundException("employee is not exist");
         }
         return employee;
@@ -45,27 +47,28 @@ public class EmployeeService {
         return employeeRepository.findAllEmployees();
     }
 
-    public Employee updateEmployee(long id, Employee updatedEmployee) {
-        Employee employee = employeeRepository.findEmployeeById(id);
-        if(employee == null){
-            throw new EmployeeNotFoundException("Employee not found");
-        }
-        if(!employee.isActiveStatus()){
+    public Employee updateEmployee(Employee updatedEmployee) {
+        if(!updatedEmployee.isActiveStatus()){
             throw new EmployeeInactiveException("you can't update inactive employee");
         }
-        return employeeRepository.updateEmployee(employee,updatedEmployee);
+        Employee employee = employeeRepository.updateEmployee(updatedEmployee);
+        if (employee == null) {
+            throw new EmployeeNotFoundException("employee don't exist");
+        }
+        return employee;
     }
 
     public void deleteEmployee(@PathVariable long id) {
-        Employee employee = employeeRepository.findEmployeeById(id);
-        if (employee == null) {
-            throw new EmployeeNotFoundException("Employee not found");
+        Employee employee = getEmployeeById(id);
+        if(employee == null){
+            throw new EmployeeNotFoundException("employee don't exist");
         }
         employeeRepository.deleteEmployee(employee);
     }
 
     public List<Employee> getEmployeesByPage(int page, int size) {
-        return employeeRepository.getEmployeesByPage(page,size);
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeRepository.getEmployeesByPage(pageable);
     }
 
 

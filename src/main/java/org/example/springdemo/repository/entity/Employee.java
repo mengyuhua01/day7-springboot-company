@@ -1,14 +1,24 @@
-package org.example.springdemo.dao.entity;
+package org.example.springdemo.repository.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "t_employee")
 public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private  int age;
+    private int age;
     private double salary;
-    private  String gender;
-    private  boolean activeStatus;
+    private String gender;
+    private boolean activeStatus;
 
-    public Employee(){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    public Employee() {
 
     }
 

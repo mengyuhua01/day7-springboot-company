@@ -1,10 +1,11 @@
-package org.example.springdemo.dao;
+package org.example.springdemo.repository.imp;
 
-import org.example.springdemo.dao.entity.Company;
+import org.example.springdemo.repository.entity.Company;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Repository
 public class CompanyRepository {
     private List<Company> companies = new ArrayList<>();
@@ -13,7 +14,7 @@ public class CompanyRepository {
     public Company createCompany(Company company) {
         company.setId(++companyId);
         companies.add(company);
-        return  company;
+        return company;
     }
 
     public Company findCompanyById(long id) {
@@ -24,17 +25,13 @@ public class CompanyRepository {
         return companies;
     }
 
-    public Company updateCompany(long id, Company updatedCompany) {
-        Company company = findCompanyById(id);
-        if(company == null){
-            return null;
-        }
+    public Company updateCompany(Company company, Company updatedCompany) {
         company.setName(updatedCompany.getName());
         return company;
     }
 
-    public boolean deleteCompany(long id) {
-        return companies.removeIf(company -> company.getId() == id);
+    public void deleteCompany(Company company) {
+        companies.remove(company);
     }
 
     public List<Company> getCompaniesByPage(int page, int size) {
@@ -43,8 +40,9 @@ public class CompanyRepository {
         if (fromIndex >= toIndex) {
             return null;
         }
-        return companies.subList(fromIndex,toIndex);
+        return companies.subList(fromIndex, toIndex);
     }
+
     public void clear() {
         companies.clear();
         companyId = 0;

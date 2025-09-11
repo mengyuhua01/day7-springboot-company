@@ -1,6 +1,6 @@
 package org.example.springdemo.controller;
 
-import org.example.springdemo.dao.CompanyRepository;
+import org.example.springdemo.repository.imp.CompanyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
